@@ -23,6 +23,15 @@ const RegistrationForm: React.FC = () => {
     console.log('Failed:', errorInfo);
   };
 
+  const prefixSelector = (
+    <Form.Item name="prefix" noStyle>
+      <Select style={{ width: 80 }}>
+        <Option value="7">+7</Option>
+        <Option value="375">+375</Option>
+      </Select>
+    </Form.Item>
+  );
+
   return (
     <Form
       layout="vertical"
@@ -89,6 +98,14 @@ const RegistrationForm: React.FC = () => {
           <Option value="male">Мужской</Option>
           <Option value="female">Женский</Option>
         </Select>
+      </Form.Item>
+
+      <Form.Item<FieldType>
+        label="Номер телефона"
+        name="phoneNumber"
+        rules={[{ required: true, message: 'пожалуйста, введите ваш номер телефона', type: 'number' }]}
+      >
+        <Input addonBefore={prefixSelector} placeholder="Ваш номер телефона" {...register('phoneNumber', { required: true })} />
       </Form.Item>
 
       <Form.Item<FieldType>>
