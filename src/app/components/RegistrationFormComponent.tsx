@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect } from 'react'
 import type { FormProps } from 'antd'
 import { Button, Col, DatePicker, Form, Input, Row, Select } from 'antd'
 import { useForm, Controller } from 'react-hook-form'
@@ -12,18 +12,15 @@ type FieldType = {
   passwordRepeat: string,
   birthdate: Date,
   gender: string,
-  phoneNumber: number,
+  phoneNumber: string,
 }
 
 const RegistrationForm: React.FC = () => {
-  const { register, control } = useForm<FieldType>()
+  const { control, handleSubmit, trigger, watch, formState: { errors } } = useForm<FieldType>({ mode: 'onChange' })
+  const passwordInput = watch('password')
 
   const onFinish: FormProps<FieldType>['onFinish'] = (values) => {
     console.log('Success:', values);
-  };
-
-  const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (errorInfo) => {
-    console.log('Failed:', errorInfo);
   };
 
   const prefixSelector = (
@@ -35,11 +32,17 @@ const RegistrationForm: React.FC = () => {
     </Form.Item>
   );
 
+  useEffect(() => {
+    if (passwordInput) {
+      trigger("passwordRepeat")
+    }
+  }, [passwordInput, trigger]);
+  
+
   return (
     <Form
       layout="vertical"
-      onFinish={onFinish}
-      onFinishFailed={onFinishFailed}
+      onFinish={handleSubmit(onFinish)}
       autoComplete="off"
       scrollToFirstError
       initialValues={{ prefix: '7', gender: ''}}
@@ -48,42 +51,94 @@ const RegistrationForm: React.FC = () => {
       <Form.Item<FieldType>
         label="Username (имя пользователя)"
         name="username"
-        rules={[{ required: true, message: 'пожалуйста, введите ваш username' }]}
+        help={errors.username && errors.username.message}
+        validateStatus={errors.username ? 'error' : 'success'}
+        required
       >
-        <Input placeholder="Ваш username" {...register('username', { required: true })}/>
+        <Controller
+          control={control}
+          name="username"
+          rules={{
+            required: 'пожалуйста, введите ваш username',
+            minLength: {
+              value: 2,
+              message: 'username должен быть длиннее двух символов'
+            }
+          }}
+          render={({ field }) => (
+            <Input {...field} placeholder="Ваш username" />
+          )}
+        />
       </Form.Item>
 
       <Form.Item<FieldType>
         label="E-mail"
         name="email"
-        rules={[{ required: true, message: 'пожалуйста, введите ваш email', type: 'email' }]}
-      >
-        <Input placeholder="Ваш email" {...register('email', { required: true })} />
+        help={errors.email && errors.email.message}
+        validateStatus={errors.email ? 'error' : 'success'}
+        required
+        >
+        <Controller
+          control={control}
+          name="email"
+          rules={{
+            required: 'пожалуйста, введите ваш e-mail',
+            pattern: {
+              value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+              message: 'невалидный e-mail'
+            }
+          }}
+          render={({ field }) => (
+            <Input {...field} placeholder="Ваш e-mail" />
+          )}
+        />
       </Form.Item>
       
       <Form.Item<FieldType>
         label="Пароль"
         name="password"
-        rules={[{ required: true, message: 'пожалуйста, введите пароль' }]}
-        hasFeedback
-      >
-        <Input.Password placeholder="Ваш новый пароль" {...register('password', { required: true })} />
+        help={errors.password && errors.password.message}
+        validateStatus={errors.password ? 'error' : 'success'}
+        required
+        >
+        <Controller
+          control={control}
+          name="password"
+          rules={{
+            required: 'пожалуйста, введите пароль',
+            minLength: {
+              value: 6,
+              message: 'пароль должен быть длиннее 6 символов'
+            },
+            pattern: {
+              value: /(?=.*[A-Z])/,
+              message: 'пароль должен содержать хотя бы одну заглавную букву'
+            }
+          }}
+          render={({ field }) => (
+            <Input.Password {...field} placeholder="Ваш новый пароль" />
+          )}
+        />
       </Form.Item>
       
       <Form.Item<FieldType>
         label="Повторите пароль"
         name="passwordRepeat"
-        dependencies={['password']}
-        rules={[{ required: true, message: 'пожалуйста, введите пароль повторно' }, ({ getFieldValue }) => ({
-          validator(_, value) {
-            if (!value || getFieldValue('password') === value) {
-              return Promise.resolve();
-            }
-            return Promise.reject(new Error('пароли не совпадают!'));
-          },
-        }),]}
-      >
-        <Input.Password placeholder="Повторите ваш новый пароль" {...register('passwordRepeat', { required: true })} />
+        help={errors.passwordRepeat && errors.passwordRepeat.message}
+        validateStatus={errors.passwordRepeat ? 'error' : 'success'}
+        required
+        >
+        <Controller
+          control={control}
+          name="passwordRepeat"
+          rules={{
+            required: 'пожалуйста, повторите пароль',
+            validate: (v) => v === passwordInput || 'пароли не совпадают',
+          }}
+          render={({ field }) => (
+            <Input.Password {...field} placeholder="Повторите ваш новый пароль" />
+          )}
+        />
       </Form.Item>
 
       <Row gutter={8}>
@@ -91,13 +146,21 @@ const RegistrationForm: React.FC = () => {
           <Form.Item<FieldType>
             label="Дата рождения"
             name="birthdate"
-            rules={[{ required: true, message: 'пожалуйста, введите вашу дату рождения' }]}
+            help={errors.birthdate && errors.birthdate.message}
+            validateStatus={errors.birthdate ? 'error' : 'success'}
+            required
           >
             <Controller
               control={control}
               name="birthdate"
+              rules={{
+                required: 'пожалуйста, введите вашу дату рождения',
+                validate: {
+                  
+                }
+              }}
               render={({ field }) => (
-                <DatePicker placeholder="Ваша дата рождения" {...field} style={{ width: '100%' }}/>
+                <DatePicker {...field} placeholder="Ваша дата рождения" style={{ width: '100%' }}/>
               )}
             />
           </Form.Item>
@@ -107,13 +170,18 @@ const RegistrationForm: React.FC = () => {
           <Form.Item<FieldType>
             label="Пол"
             name="gender"
-            rules={[{ required: true, message: 'пожалуйста, укажите пол' }]}
+            help={errors.gender && errors.gender.message}
+            validateStatus={errors.gender ? 'error' : 'success'}
+            required
           >
             <Controller
               control={control}
               name="gender"
+              rules={{
+                required: 'пожалуйста, укажите пол'
+              }}
               render={({ field }) => (
-                <Select placeholder="Укажите пол" {...field}>
+                <Select {...field} placeholder="Укажите пол">
                   <Select.Option value="male">Мужской</Select.Option>
                   <Select.Option value="female">Женский</Select.Option>
                 </Select>
@@ -123,13 +191,25 @@ const RegistrationForm: React.FC = () => {
         </Col>
       </Row>
 
-
       <Form.Item<FieldType>
         label="Номер телефона"
         name="phoneNumber"
-        rules={[{ required: true, message: 'пожалуйста, введите ваш номер телефона', type: 'number' }]}
+        validateStatus={errors.phoneNumber && 'error'}
+        help={errors.phoneNumber?.message}
+        required
       >
-        <Input addonBefore={prefixSelector} placeholder="Ваш номер телефона" {...register('phoneNumber', { required: true })} />
+        <Controller
+          control={control}
+          name="phoneNumber"
+          rules={{
+            required: 'Пожалуйста, введите ваш номер телефона',
+            pattern: {
+              value: /^\d+$/,
+              message: 'Номер телефона должен содержать только цифры'
+            }
+          }}
+          render={({ field }) => <Input {...field} name={field.name} addonBefore={prefixSelector} placeholder="Ваш номер телефона" style={{ width: '100%' }} />}
+        />
       </Form.Item>
 
       <Form.Item<FieldType>>
