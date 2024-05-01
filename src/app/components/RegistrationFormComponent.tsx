@@ -4,6 +4,7 @@ import React, { useEffect } from 'react'
 import type { FormProps } from 'antd'
 import { Button, Col, DatePicker, Form, Input, Row, Select } from 'antd'
 import { useForm, Controller } from 'react-hook-form'
+import { RegistrationFormData } from '../shared/interfaces'
 
 type FieldType = {
   username: string,
@@ -15,12 +16,16 @@ type FieldType = {
   phoneNumber: string,
 }
 
-const RegistrationForm: React.FC = () => {
+interface RegistrationFormProps {
+  getModalData: (data: RegistrationFormData) => void
+}
+
+const RegistrationForm: React.FC<RegistrationFormProps> = ({ getModalData }) => {
   const { control, handleSubmit, trigger, watch, formState: { errors } } = useForm<FieldType>({ mode: 'onChange' })
   const passwordInput = watch('password')
 
   const onFinish: FormProps<FieldType>['onFinish'] = (values) => {
-    console.log('Success:', values);
+    getModalData(values)
   };
 
   const prefixSelector = (
@@ -159,8 +164,6 @@ const RegistrationForm: React.FC = () => {
                   tooYoung: (v) => {
                     const today = new Date()
                     const birthdate = new Date(v)
-                    console.log('today: ', today.getFullYear());
-                    console.log('birthdate: ', birthdate.getFullYear());
                     if (today.getFullYear() - birthdate.getFullYear() <= 14) {
                       return 'слишком пиздюк'
                     } else if (today.getFullYear() - birthdate.getFullYear() >= 140) {
