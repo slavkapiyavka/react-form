@@ -156,7 +156,18 @@ const RegistrationForm: React.FC = () => {
               rules={{
                 required: 'пожалуйста, введите вашу дату рождения',
                 validate: {
-                  
+                  tooYoung: (v) => {
+                    const today = new Date()
+                    const birthdate = new Date(v)
+                    console.log('today: ', today.getFullYear());
+                    console.log('birthdate: ', birthdate.getFullYear());
+                    if (today.getFullYear() - birthdate.getFullYear() <= 14) {
+                      return 'слишком пиздюк'
+                    } else if (today.getFullYear() - birthdate.getFullYear() >= 140) {
+                      return 'слишком древний'
+                    }
+                    return true
+                  }
                 }
               }}
               render={({ field }) => (
