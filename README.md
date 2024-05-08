@@ -1,4 +1,12 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Registration Form Application
+
+This is a registration form application built with the [Next.js](https://nextjs.org/) framework, using the [react-hook-form](https://react-hook-form.com/) library and styled with [Ant Design](https://ant.design/). This application demonstrates a robust user registration process, including field validations and data handling.
+
+## Project Overview
+
+The `RegistrationForm` component handles user inputs for fields such as username, email, password, password confirmation, date of birth, gender, and phone number. It ensures that all data entered meets specific criteria (e.g., email format, password requirements) before allowing a user to submit the form. Validation errors are displayed clearly beneath each field to guide the user towards successful form completion.
+
+Upon submission, if all fields are correctly filled, the form data is displayed in a JSON format within a modal window, confirming the registration success. This project aims to provide a user-friendly, interactive registration experience while employing best practices in form handling and validation with `react-hook-form`.
 
 ## Getting Started
 
@@ -14,23 +22,15 @@ pnpm dev
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000 with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+You can start editing the page by modifying app/pages/index.tsx. The page auto-updates as you edit the file.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+Features
+Field Validation: Extensive checks ensure that all user input meets required criteria before submission.
+Interactive UI: Real-time feedback is provided as the user fills out the form, enhancing the overall user experience.
+Responsive Design: Styled with Ant Design, the form is responsive and accessible across all devices.
+License
+This project is open source and available under the MIT License.
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+## Contributions are welcome! 🌻
